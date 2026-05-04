@@ -124,6 +124,40 @@ function Add-ReportLine {
     $Report.Add($Line) | Out-Null
 }
 
+function Test-MysqlConnection {
+    param(
+        [string]$MysqlPath,
+        [string[]]$MysqlArgs
+    )
+
+    & $MysqlPath @MysqlArgs -e "SELECT 1;" | Out-Null
+    return ($LASTEXITCODE -eq 0)
+}
+
+function Try-StartXamppMySql {
+    param([System.Collections.Generic.List[string]]$Report)
+
+    $xamppStartScript = "C:\xampp\mysql_start.bat"
+    if (-not (Test-Path $xamppStartScript)) {
+        return $false
+    }
+
+    Write-Info "XAMPP detected. MySQL is not responding, so the setup script will try to start it."
+    Add-ReportLine -Report $Report -Line "XAMPP MySQL start: ATTEMPTED"
+
+    try {
+        & $xamppStartScript | Out-Null
+        Start-Sleep -Seconds 6
+        Write-Ok "XAMPP MySQL start command executed"
+        Add-ReportLine -Report $Report -Line "XAMPP MySQL start: COMMAND EXECUTED"
+        return $true
+    } catch {
+        Write-WarnLine ("Could not start MySQL with XAMPP: " + $_.Exception.Message)
+        Add-ReportLine -Report $Report -Line ("XAMPP MySQL start: FAILED - " + $_.Exception.Message)
+        return $false
+    }
+}
+
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $dbPropertiesPath = Join-Path $projectRoot "src\main\resources\db.properties"
 $schemaPath = Join-Path $projectRoot "src\main\resources\schema.sql"
@@ -238,7 +272,18 @@ if ($SkipDatabase) {
     }
 
     try {
-        & $mysqlPath @mysqlArgs -e "SELECT 1;" | Out-Null
+        $connectionOk = Test-MysqlConnection -MysqlPath $mysqlPath -MysqlArgs $mysqlArgs
+        if (-not $connectionOk -and $mysqlPath.StartsWith("C:\xampp\", [System.StringComparison]::OrdinalIgnoreCase)) {
+            $started = Try-StartXamppMySql -Report $report
+            if ($started) {
+                $connectionOk = Test-MysqlConnection -MysqlPath $mysqlPath -MysqlArgs $mysqlArgs
+            }
+        }
+
+        if (-not $connectionOk) {
+            throw "The MySQL/MariaDB server is not responding."
+        }
+
         Write-Ok "Database connection succeeded"
         Add-ReportLine -Report $report -Line "Database connection: OK"
 

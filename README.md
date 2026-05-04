@@ -125,6 +125,7 @@ What the setup script does:
 - checks `db.properties`
 - updates the JDBC configuration file if needed
 - checks for a local MySQL or MariaDB client
+- if XAMPP is detected and MySQL is not running, it tries to start MySQL automatically
 - applies `schema.sql` automatically if the DB connection works
 - compiles the project with Maven if Maven is installed
 - creates `setup-report.txt` with a summary
