@@ -92,7 +92,8 @@ function Write-DbProperties {
         "db.user=$User"
         "db.password=$Password"
     )
-    Set-Content -Path $Path -Value $content -Encoding UTF8
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllLines($Path, $content, $utf8NoBom)
 }
 
 function Parse-JdbcUrl {
