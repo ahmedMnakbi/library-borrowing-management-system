@@ -1,0 +1,124 @@
+@startuml
+title Library Borrowing Management System V2 - Class Diagram
+
+skinparam classAttributeIconSize 0
+hide circle
+
+abstract class Person {
+  # id : int
+  # firstName : String
+  # lastName : String
+  # email : String
+  # phone : String
+  + getFullName() : String
+}
+
+abstract class User {
+  - username : String
+  - passwordHash : String
+  - role : Role
+  - active : boolean
+  + isActive() : boolean
+}
+
+class Member {
+  - membershipNumber : String
+  - registrationDate : LocalDate
+  - maxLoans : int
+  - address : String
+  + canBorrow() : boolean
+}
+
+class Staff {
+  - employeeNumber : String
+  - hireDate : LocalDate
+}
+
+class Admin
+class Librarian
+
+class Book {
+  - bookId : int
+  - isbn : String
+  - title : String
+  - publisher : String
+  - publicationYear : int
+  - active : boolean
+  + getAvailableCopiesCount() : long
+}
+
+class BookCopy {
+  - copyId : int
+  - barcode : String
+  - status : CopyStatus
+  - acquisitionDate : LocalDate
+}
+
+class Loan {
+  - loanId : int
+  - borrowDate : LocalDate
+  - dueDate : LocalDate
+  - returnDate : LocalDate
+  - status : LoanStatus
+  + isOverdue() : boolean
+  + markAsReturned(date) : void
+  + calculateDelayDays(date) : long
+}
+
+class Fine {
+  - fineId : int
+  - amount : BigDecimal
+  - reason : String
+  - status : FineStatus
+  + getAmount() : BigDecimal
+}
+
+class Reservation {
+  - reservationId : int
+  - reservationDate : LocalDate
+  - expiryDate : LocalDate
+  - status : ReservationStatus
+}
+
+class Author {
+  - authorId : int
+  - firstName : String
+  - lastName : String
+  + getFullName() : String
+}
+
+class Category {
+  - categoryId : int
+  - name : String
+  - description : String
+}
+
+enum Role
+enum CopyStatus
+enum LoanStatus
+enum FineStatus
+enum ReservationStatus
+
+Person <|-- User
+User <|-- Member
+User <|-- Staff
+Staff <|-- Admin
+Staff <|-- Librarian
+
+Book "1" o-- "0..*" BookCopy : copies
+Book "0..*" -- "0..*" Author : authors
+Category "1" <-- "0..*" Book : category
+Member "1" <-- "0..*" Loan : borrows
+Loan "1" --> "1" Member
+Loan "1" --> "1" BookCopy
+Loan "1" --> "1" Librarian
+Fine "0..1" --> "1" Loan
+Reservation "0..*" --> "1" Member
+Reservation "0..*" --> "1" Book
+
+User --> Role
+BookCopy --> CopyStatus
+Loan --> LoanStatus
+Fine --> FineStatus
+Reservation --> ReservationStatus
+@enduml

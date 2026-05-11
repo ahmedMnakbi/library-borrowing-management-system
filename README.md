@@ -64,6 +64,29 @@ Main tables:
 
 `seed.sql` loads a richer demo database with several users, categories, authors, books, copies, loans, fines, and reservations. See `DEMO_DATABASE_SCENARIOS.md` for phpMyAdmin demo ideas.
 
+## Diagrams
+
+PlantUML diagram sources are available in `docs/diagrams/`:
+
+- [Class Diagram](docs/diagrams/class-diagram.puml)
+- [Architecture Diagram](docs/diagrams/architecture-diagram.puml)
+- [Borrow Sequence](docs/diagrams/borrow-sequence.puml)
+- [Return Sequence](docs/diagrams/return-sequence.puml)
+- [Reservation Sequence](docs/diagrams/reservation-sequence.puml)
+- [Database Overview](docs/diagrams/database-overview.puml)
+
+PlantUML is optional documentation tooling. To render SVG diagrams later:
+
+```bash
+plantuml -tsvg docs/diagrams/*.puml
+```
+
+Or with a local PlantUML jar:
+
+```bash
+java -jar tools/plantuml.jar -tsvg docs/diagrams/*.puml
+```
+
 ## Setup
 
 1. Start MySQL/MariaDB.
@@ -128,7 +151,12 @@ The script asks before installing tools or importing/resetting the demo database
 |---|---|---|
 | Admin | `admin1` | `admin123` |
 | Librarian | `lib1` | `lib123` |
+| Librarian | `lib2` | `lib123` |
 | Member | `mem1` | `mem123` |
+| Member | `mem2` | `mem123` |
+| Member | `mem3` | `mem123` |
+| Member | `mem4` | `mem123` |
+| Member | `mem5` | `mem123` |
 
 Passwords are stored hashed in the seed data. This is a small security bonus, not the central topic of the project.
 

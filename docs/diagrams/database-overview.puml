@@ -1,0 +1,113 @@
+@startuml
+title Library Database Overview
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+
+entity users {
+  * user_id : INT
+  --
+  username
+  password_hash
+  role
+  active
+}
+
+entity members {
+  * member_id : INT
+  --
+  membership_number
+  address
+  registration_date
+  max_loans
+}
+
+entity staff {
+  * staff_id : INT
+  --
+  employee_number
+  hire_date
+}
+
+entity categories {
+  * category_id : INT
+  --
+  name
+  description
+}
+
+entity authors {
+  * author_id : INT
+  --
+  first_name
+  last_name
+}
+
+entity books {
+  * book_id : INT
+  --
+  isbn
+  title
+  publisher
+  publication_year
+  category_id
+}
+
+entity book_authors {
+  * book_id : INT
+  * author_id : INT
+}
+
+entity book_copies {
+  * copy_id : INT
+  --
+  book_id
+  barcode
+  status
+}
+
+entity loans {
+  * loan_id : INT
+  --
+  copy_id
+  member_id
+  librarian_id
+  borrow_date
+  due_date
+  return_date
+  status
+}
+
+entity fines {
+  * fine_id : INT
+  --
+  loan_id
+  amount
+  reason
+  status
+}
+
+entity reservations {
+  * reservation_id : INT
+  --
+  book_id
+  member_id
+  reservation_date
+  expiry_date
+  status
+}
+
+users ||--o| members
+users ||--o| staff
+categories ||--o{ books
+books ||--o{ book_authors
+authors ||--o{ book_authors
+books ||--o{ book_copies
+members ||--o{ loans
+book_copies ||--o{ loans
+loans ||--o| fines
+members ||--o{ reservations
+books ||--o{ reservations
+staff ||--o{ loans : librarian
+@enduml

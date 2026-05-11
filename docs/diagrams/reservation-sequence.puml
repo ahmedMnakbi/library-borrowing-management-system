@@ -1,0 +1,44 @@
+@startuml
+title Reservation Sequence
+
+actor Member
+participant ConsoleMenu
+participant LibraryService
+participant LibraryRepository
+database "MySQL Database" as DB
+
+Member -> ConsoleMenu : select "Reserve book"
+ConsoleMenu -> Member : ask book ID
+Member -> ConsoleMenu : enter book ID
+ConsoleMenu -> LibraryService : createReservation(bookId, memberId)
+
+LibraryService -> LibraryRepository : findBookById(bookId)
+LibraryRepository -> DB : SELECT book
+DB --> LibraryRepository : book row
+LibraryRepository --> LibraryService : Book
+
+LibraryService -> LibraryRepository : hasAvailableCopy(bookId)
+LibraryRepository -> DB : SELECT available copy count
+DB --> LibraryRepository : count
+
+alt available copy exists
+  LibraryService --> ConsoleMenu : refuse reservation
+  ConsoleMenu --> Member : show "borrow available copy instead"
+else no copy available
+  LibraryService -> LibraryRepository : hasPendingReservation(memberId, bookId)
+  LibraryRepository -> DB : SELECT pending reservation count
+  DB --> LibraryRepository : count
+
+  alt duplicate pending reservation
+    LibraryService --> ConsoleMenu : refuse duplicate
+    ConsoleMenu --> Member : show duplicate message
+  else reservation created
+    LibraryService -> LibraryRepository : createReservation(bookId, memberId, dates)
+    LibraryRepository -> DB : INSERT reservations(status='PENDING')
+    DB --> LibraryRepository : reservation ID
+    LibraryRepository --> LibraryService : Reservation
+    LibraryService --> ConsoleMenu : Reservation
+    ConsoleMenu --> Member : show success
+  end
+end
+@enduml

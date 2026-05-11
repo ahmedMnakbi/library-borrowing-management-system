@@ -20,6 +20,17 @@ Expected result:
 
 For a database-focused presentation, see `DEMO_DATABASE_SCENARIOS.md`.
 
+Seeded login accounts:
+
+- `admin1` / `admin123`
+- `lib1` / `lib123`
+- `lib2` / `lib123`
+- `mem1` / `mem123`
+- `mem2` / `mem123`
+- `mem3` / `mem123`
+- `mem4` / `mem123`
+- `mem5` / `mem123`
+
 ## 2. Compile
 
 ```bash

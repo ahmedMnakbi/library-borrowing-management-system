@@ -1,0 +1,42 @@
+@startuml
+title Borrow Book Sequence
+
+actor Librarian
+participant ConsoleMenu
+participant LibraryService
+participant LibraryRepository
+database "MySQL Database" as DB
+
+Librarian -> ConsoleMenu : select "Create loan"
+ConsoleMenu -> Librarian : ask member ID and copy ID
+Librarian -> ConsoleMenu : enter member ID, copy ID
+ConsoleMenu -> LibraryService : borrowBook(memberId, copyId, librarianId)
+
+LibraryService -> LibraryRepository : findUserById(memberId)
+LibraryRepository -> DB : SELECT member/user
+DB --> LibraryRepository : member row
+LibraryRepository --> LibraryService : Member
+
+LibraryService -> LibraryRepository : hasUnpaidFines(memberId)
+LibraryRepository -> DB : SELECT unpaid fines count
+DB --> LibraryRepository : count
+LibraryRepository --> LibraryService : false
+
+LibraryService -> LibraryRepository : countActiveLoansByMember(memberId)
+LibraryRepository -> DB : SELECT active loan count
+DB --> LibraryRepository : count
+LibraryRepository --> LibraryService : count under limit
+
+LibraryService -> LibraryRepository : findCopyById(copyId)
+LibraryRepository -> DB : SELECT copy/book
+DB --> LibraryRepository : copy row
+LibraryRepository --> LibraryService : BookCopy AVAILABLE
+
+LibraryService -> LibraryRepository : createLoan(memberId, copyId, librarianId, dates)
+LibraryRepository -> DB : INSERT loans
+LibraryRepository -> DB : UPDATE book_copies SET status='BORROWED'
+DB --> LibraryRepository : saved
+LibraryRepository --> LibraryService : Loan
+LibraryService --> ConsoleMenu : Loan
+ConsoleMenu --> Librarian : show success and due date
+@enduml

@@ -91,7 +91,12 @@ Reservation rule:
 
 - Admin: `admin1` / `admin123`
 - Librarian: `lib1` / `lib123`
+- Librarian: `lib2` / `lib123`
 - Member: `mem1` / `mem123`
+- Member: `mem2` / `mem123`
+- Member: `mem3` / `mem123`
+- Member: `mem4` / `mem123`
+- Member: `mem5` / `mem123`
 
 ## Avoid Overexplaining
 

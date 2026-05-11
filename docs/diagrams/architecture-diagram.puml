@@ -1,0 +1,59 @@
+@startuml
+title Library Borrowing Management System V2 - Simplified Architecture
+
+skinparam componentStyle rectangle
+
+package "com.library" {
+  [Main] --> [ConsoleMenu]
+}
+
+package "com.library.ui" {
+  [ConsoleMenu]
+}
+
+package "com.library.service" {
+  [LibraryService]
+}
+
+package "com.library.database" {
+  [LibraryRepository]
+  [DatabaseConnection]
+}
+
+package "com.library.model" {
+  [Model Classes]
+}
+
+package "support packages" {
+  [enums]
+  [exceptions]
+}
+
+database "MySQL/MariaDB\nlibrary_db" as DB
+
+[ConsoleMenu] --> [LibraryService] : calls workflows
+[LibraryService] --> [LibraryRepository] : applies rules, asks for data
+[LibraryRepository] --> [DatabaseConnection] : obtains JDBC Connection
+[DatabaseConnection] --> DB : JDBC
+[LibraryService] ..> [Model Classes] : uses objects
+[LibraryRepository] ..> [Model Classes] : maps SQL rows
+[LibraryService] ..> [enums]
+[LibraryService] ..> [exceptions]
+[LibraryRepository] ..> [enums]
+
+note right of [ConsoleMenu]
+Official V2 demo is console-based.
+No Swing core.
+end note
+
+note bottom of [LibraryService]
+Business rules:
+loan limit, unpaid fines,
+copy availability, reservation rules.
+end note
+
+note bottom of [LibraryRepository]
+Simple SQL repository.
+No many-DAO architecture in V2.
+end note
+@enduml

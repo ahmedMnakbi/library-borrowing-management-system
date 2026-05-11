@@ -1,0 +1,38 @@
+@startuml
+title Return Book Sequence
+
+actor Librarian
+participant ConsoleMenu
+participant LibraryService
+participant LibraryRepository
+database "MySQL Database" as DB
+
+Librarian -> ConsoleMenu : select "Return loan"
+ConsoleMenu -> Librarian : ask loan ID
+Librarian -> ConsoleMenu : enter loan ID
+ConsoleMenu -> LibraryService : returnBook(loanId)
+
+LibraryService -> LibraryRepository : findLoanById(loanId)
+LibraryRepository -> DB : SELECT loan/copy/member/book
+DB --> LibraryRepository : loan row
+LibraryRepository --> LibraryService : Loan
+
+LibraryService -> LibraryService : check loan exists
+LibraryService -> LibraryService : check not already RETURNED
+LibraryService -> LibraryService : calculateDelayDays(today)
+LibraryService -> LibraryRepository : returnLoan(loan, fineAmount, reason)
+LibraryRepository -> DB : UPDATE loans SET status='RETURNED'
+LibraryRepository -> DB : UPDATE book_copies SET status='AVAILABLE'
+
+alt return on time
+  LibraryRepository -> DB : no fine inserted
+  LibraryRepository --> LibraryService : saved
+  LibraryService --> ConsoleMenu : fine = 0.00
+else late return with fine
+  LibraryRepository -> DB : INSERT fines(status='UNPAID')
+  LibraryRepository --> LibraryService : saved
+  LibraryService --> ConsoleMenu : fine amount
+end
+
+ConsoleMenu --> Librarian : show return result
+@enduml
