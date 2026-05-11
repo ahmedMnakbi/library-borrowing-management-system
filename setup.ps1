@@ -162,6 +162,7 @@ function Try-StartXamppMySql {
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $dbPropertiesPath = Join-Path $projectRoot "src\main\resources\db.properties"
 $schemaPath = Join-Path $projectRoot "src\main\resources\schema.sql"
+$seedPath = Join-Path $projectRoot "src\main\resources\seed.sql"
 $reportPath = Join-Path $projectRoot "setup-report.txt"
 
 $report = [System.Collections.Generic.List[string]]::new()
@@ -175,7 +176,10 @@ if (-not (Test-Path $dbPropertiesPath)) {
 if (-not (Test-Path $schemaPath)) {
     throw "Missing file: $schemaPath"
 }
-Write-Ok "Found db.properties and schema.sql"
+if (-not (Test-Path $seedPath)) {
+    throw "Missing file: $seedPath"
+}
+Write-Ok "Found db.properties, schema.sql, and seed.sql"
 Add-ReportLine -Report $report -Line "Project files: OK"
 
 Write-Section "Java check"
@@ -293,6 +297,11 @@ if ($SkipDatabase) {
         Write-Ok "schema.sql applied successfully"
         Add-ReportLine -Report $report -Line "schema.sql: APPLIED"
 
+        $seedContent = Get-Content -Raw $seedPath
+        $seedContent | & $mysqlPath @mysqlArgs | Out-Null
+        Write-Ok "seed.sql applied successfully"
+        Add-ReportLine -Report $report -Line "seed.sql: APPLIED"
+
         $verifyOutput = & $mysqlPath @mysqlArgs -e ("SHOW TABLES FROM " + $parsedJdbc["Database"] + ";") 2>&1
         if ($LASTEXITCODE -eq 0) {
             $databaseReady = $true
@@ -356,10 +365,10 @@ if ($buildReady) {
 Write-Host ""
 Write-Host "Next step to launch the app:" -ForegroundColor Cyan
 Write-Host "1. Open the project in IntelliJ IDEA"
-Write-Host "2. Run com.library.app.Main"
-Write-Host "3. If there are no users yet, create the first admin account"
+Write-Host "2. Run com.library.Main"
+Write-Host "3. Use the demo accounts from README.md"
 
 Add-ReportLine -Report $report -Line ""
-Add-ReportLine -Report $report -Line "Next step: open the project in IntelliJ IDEA and run com.library.app.Main"
+Add-ReportLine -Report $report -Line "Next step: open the project in IntelliJ IDEA and run com.library.Main"
 Set-Content -Path $reportPath -Value $report -Encoding UTF8
 Write-Info ("A detailed report was written to " + $reportPath)

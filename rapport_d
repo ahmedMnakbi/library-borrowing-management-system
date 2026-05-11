@@ -1,572 +1,132 @@
-RAPPORT DETAILLE DU PROJET
-Library Borrowing Management System
-
-1. But du document
-
-Ce fichier explique :
-- comment le projet a ete construit du debut a la fin ;
-- le role de chaque fichier important du projet ;
-- la difference entre les fichiers sources, les fichiers de configuration, les tests et les artefacts generes.
-
-Le rapport couvre aussi les fichiers utilitaires ajoutes pendant la verification locale.
-
-================================================================
-2. Construction du projet du debut a la fin
-================================================================
-
-Phase 1 - Analyse du cahier des charges
-
-Le projet a commence par l'analyse du PDF du cahier des charges. Cette analyse a permis d'identifier :
-- les acteurs : admin, bibliothecaire, adherent ;
-- les entites : users, members, staff, books, book_copies, loans, fines, reservations, authors, categories ;
-- les regles metier : disponibilite, retard, limite d'emprunts, penalites, reservations ;
-- l'architecture attendue : model, dao, service, ui, util, enums, exception ;
-- les exigences techniques : Java OOP, JDBC, MySQL/MariaDB, IntelliJ, Maven.
-
-Phase 2 - Mise en place de la structure du projet
-
-Le projet a ensuite ete cree avec une structure Maven classique :
-- `src/main/java`
-- `src/main/resources`
-- `src/test/java`
-
-Les packages ont ete crees pour separer les responsabilites :
-- `app`
-- `model`
-- `dao`
-- `service`
-- `ui`
-- `util`
-- `enums`
-- `exception`
-
-Phase 3 - Configuration generale
-
-Les premiers fichiers ajoutes ont ete :
-- `pom.xml` pour Maven ;
-- `db.properties` pour la configuration JDBC ;
-- `schema.sql` pour la base de donnees ;
-- `README.md` pour l'installation et l'execution.
-
-Phase 4 - Conception orientee objet
-
-La couche metier a ete creee avec :
-- une hierarchie `Person -> User -> Member / Staff -> Librarian / Admin` ;
-- des classes distinctes pour `Book` et `BookCopy` ;
-- des enums pour les roles et statuts ;
-- des exceptions personnalisees ;
-- des utilitaires pour la base, la validation et le hash des mots de passe.
-
-Phase 5 - Acces aux donnees avec JDBC
-
-Les DAO ont ete implementes avec `PreparedStatement` pour :
-- lire ;
-- creer ;
-- modifier ;
-- desactiver ;
-- chercher ;
-- manipuler les relations SQL.
-
-Des transactions JDBC ont ete ajoutees surtout pour :
-- l'emprunt ;
-- le retour ;
-- la creation conditionnelle de penalites.
-
-Phase 6 - Logique metier
-
-Les services ont ensuite centralise les regles metier :
-- connexion selon le role ;
-- verification d'eligibilite ;
-- controle du nombre maximal d'emprunts ;
-- blocage si penalites impayees ;
-- retour avec calcul de penalite ;
-- reservations ;
-- rapports.
-
-Phase 7 - Interface utilisateur
-
-Une interface console complete a ete construite comme version principale.
-Un bonus Swing minimal a ensuite ete ajoute pour :
-- la connexion ;
-- le tableau de bord ;
-- la consultation rapide des donnees.
-
-Phase 8 - Tests et corrections
-
-Des tests unitaires ont ete ajoutes pour :
-- le calcul des penalites ;
-- les retours ;
-- l'eligibilite des adherents ;
-- les regles d'emprunt ;
-- les reservations ;
-- la connexion JDBC.
+# Rapport V2 - Library Borrowing Management System
 
-Pendant cette phase, plusieurs ajustements ont ete faits :
-- repli de lecture de `db.properties` hors Maven ;
-- chargement explicite du driver JDBC ;
-- ajout d'une option de reactivation d'utilisateur ;
-- creation d'un script de test complet.
+## Objectif
 
-Phase 9 - Verification finale
+Cette version V2 est une version simplifiee et alignee avec le cours. Le but principal est de montrer les concepts Java OOP et l'utilisation d'une vraie base de donnees.
 
-Le projet a ete compile localement, les tests ont ete executes, et les fichiers suivants ont ete ajoutes pour faciliter la validation :
-- `TEST_SCRIPT.md`
-- `tools/*.jar`
-- `out/*`
-- `target/*`
+## Sujet
 
-================================================================
-3. Explication des fichiers racine
-================================================================
+Le projet gere une bibliotheque :
 
-`pom.xml`
-- Fichier Maven principal.
-- Defini le nom du projet, la version et les dependances.
-- Ajoute `mysql-connector-j` et `junit-jupiter`.
-- Configure le compilateur Java et Surefire pour les tests.
+- utilisateurs
+- adherents
+- personnel
+- livres
+- exemplaires physiques
+- emprunts
+- retours
+- penalites
+- reservations
 
-`README.md`
-- Guide d'installation et d'execution.
-- Explique l'import IntelliJ, la base de donnees, `db.properties`, le lancement de l'application et les tests.
+## Architecture Simplifiee
 
-`TEST_SCRIPT.md`
-- Guide de test pas a pas avec donnees concretes.
-- Sert a valider toutes les fonctionnalites sans improvisation.
+Le projet est organise en packages simples :
 
-`rapport_d`
-- Le present document.
-- Sert de rapport explicatif complet du projet.
+- `model` : classes metier et concepts OOP
+- `database` : connexion JDBC et requetes SQL
+- `service` : regles metier
+- `ui` : interface console
+- `enums` : roles et statuts
+- `exception` : erreurs personnalisees
+- `util` : petit utilitaire de mot de passe
 
-================================================================
-4. Dossier .idea
-================================================================
+## Base De Donnees
 
-Le dossier `.idea` est genere et maintenu par IntelliJ IDEA.
+La base de donnees est obligatoire dans cette version. Les donnees sont stockees dans MySQL/MariaDB.
 
-`.idea/.gitignore`
-- Fichier IntelliJ pour ignorer certains fichiers internes.
+Fichiers importants :
 
-`.idea/compiler.xml`
-- Configuration du compilateur dans IntelliJ.
+- `schema.sql` : creation des tables
+- `seed.sql` : donnees de demonstration
+- `DatabaseConnection.java` : connexion JDBC
+- `LibraryRepository.java` : requetes SQL
 
-`.idea/encodings.xml`
-- Configuration d'encodage des fichiers.
+Le choix important est la separation entre `Book` et `BookCopy`. Un livre represente un titre, alors qu'un exemplaire represente une copie physique avec son propre statut.
 
-`.idea/jarRepositories.xml`
-- Liste des depots utilises par IntelliJ pour recuperer les dependances Maven.
+## Concepts OOP
 
-`.idea/misc.xml`
-- Parametres generaux du projet IntelliJ, y compris le JDK.
+Classes et objets :
 
-`.idea/workspace.xml`
-- Fichier local IntelliJ contenant l'etat de la session, les fenetres, l'historique et d'autres preferences temporaires.
+- `Book`, `BookCopy`, `Member`, `Loan`, `Fine`, `Reservation`
 
-================================================================
-5. Ressources
-================================================================
+Encapsulation :
 
-`src/main/resources/db.properties`
-- Contient l'URL JDBC, l'utilisateur et le mot de passe de la base.
-- Utilise par `DatabaseConnection.java`.
+- attributs prives/proteges
+- getters et setters
 
-`src/main/resources/schema.sql`
-- Cree la base `library_db`.
-- Cree toutes les tables du projet.
-- Ajoute les contraintes et index principaux.
+Constructeurs :
 
-================================================================
-6. Package app
-================================================================
+- les classes du package `model` possedent des constructeurs pour initialiser les objets
 
-`src/main/java/com/library/app/ApplicationContext.java`
-- Assemble les services principaux.
-- Sert de point central pour partager les services entre la console et Swing.
+Heritage :
 
-`src/main/java/com/library/app/Main.java`
-- Point d'entree de l'application.
-- Lance la console par defaut.
-- Lance Swing si l'argument `--swing` est fourni.
+```text
+Person
+  User
+    Member
+    Staff
+      Admin
+      Librarian
+```
 
-================================================================
-7. Package enums
-================================================================
+Abstraction :
 
-`src/main/java/com/library/enums/Role.java`
-- Definit les roles `ADMIN`, `LIBRARIAN`, `MEMBER`.
+- `Person` et `User` sont des classes abstraites
 
-`src/main/java/com/library/enums/CopyStatus.java`
-- Definit les statuts possibles d'un exemplaire.
+Polymorphisme :
 
-`src/main/java/com/library/enums/LoanStatus.java`
-- Definit les statuts d'un emprunt.
+- apres la connexion, le programme manipule un `User`, puis ouvre le menu selon le vrai role : admin, bibliothecaire ou adherent
 
-`src/main/java/com/library/enums/FineStatus.java`
-- Definit les statuts d'une penalite.
+Exceptions :
 
-`src/main/java/com/library/enums/ReservationStatus.java`
-- Definit les statuts d'une reservation.
+- `AuthenticationException`
+- `BookUnavailableException`
+- `LoanLimitExceededException`
+- `DuplicateReservationException`
 
-================================================================
-8. Package exception
-================================================================
+Collections :
 
-`src/main/java/com/library/exception/AuthenticationException.java`
-- Gere les erreurs de connexion.
+- `List<Book>`
+- `List<Author>`
+- `List<BookCopy>`
+- `List<Loan>`
 
-`src/main/java/com/library/exception/BookUnavailableException.java`
-- Signale qu'un livre ou exemplaire n'est pas disponible pour l'action demandee.
+## Interface
 
-`src/main/java/com/library/exception/DatabaseException.java`
-- Encapsule les problemes lies a la configuration ou a l'acces a la base.
+La demonstration officielle est en console avec `ConsoleMenu.java`.
 
-`src/main/java/com/library/exception/EntityNotFoundException.java`
-- Signale qu'un element recherche est introuvable.
+Une interface visuelle peut etre ajoutee plus tard comme amelioration, mais elle ne fait pas partie du coeur V2.
 
-`src/main/java/com/library/exception/InvalidReturnException.java`
-- Signale un retour invalide, comme un double retour.
+## Fonctionnalites Principales
 
-`src/main/java/com/library/exception/LoanLimitExceededException.java`
-- Signale un depassement des conditions d'emprunt.
+Admin :
 
-`src/main/java/com/library/exception/ValidationException.java`
-- Signale un probleme de validation d'entree.
+- connexion
+- creation de personnel
+- activation/desactivation d'utilisateurs
 
-================================================================
-9. Package util
-================================================================
+Bibliothecaire :
 
-`src/main/java/com/library/util/DatabaseConnection.java`
-- Charge `db.properties`.
-- Gere le chargement du driver JDBC MySQL/MariaDB.
-- Ouvre les connexions SQL.
-- Inclut un repli vers le fichier de projet si les ressources ne sont pas encore copiees.
+- gestion livres/categories/auteurs
+- gestion exemplaires
+- creation adherents
+- emprunts
+- retours
+- penalites
+- reservations
 
-`src/main/java/com/library/util/PasswordUtil.java`
-- Genere un hash sale des mots de passe avec PBKDF2.
-- Verifie un mot de passe saisi contre le hash stocke.
+Adherent :
 
-`src/main/java/com/library/util/Validator.java`
-- Centralise les controles simples de validation.
-- Verifie les champs obligatoires, les emails, les dates et les valeurs positives.
+- recherche livres
+- consultation emprunts
+- consultation penalites
+- reservation
 
-================================================================
-10. Package model
-================================================================
+## Elements Bonus
 
-`src/main/java/com/library/model/Person.java`
-- Classe abstraite de base pour les personnes.
-- Contient `id`, `firstName`, `lastName`, `email`, `phone`.
+- Maven sert a gerer le connecteur MySQL
+- le hashage du mot de passe est une petite amelioration de securite
+- les tests automatiques peuvent etre ajoutes plus tard
+- les rapports/statistiques peuvent etre ajoutes plus tard
 
-`src/main/java/com/library/model/User.java`
-- Classe abstraite pour les utilisateurs connectables.
-- Ajoute `username`, `passwordHash`, `role`, `active`.
-
-`src/main/java/com/library/model/Member.java`
-- Represente un adherent.
-- Ajoute `membershipNumber`, `registrationDate`, `maxLoans`, `address`.
-- Contient la logique `canBorrow()`.
-
-`src/main/java/com/library/model/Staff.java`
-- Represente un employe.
-- Ajoute `employeeNumber` et `hireDate`.
-
-`src/main/java/com/library/model/Librarian.java`
-- Specialisation de `Staff` pour le bibliothecaire.
-
-`src/main/java/com/library/model/Admin.java`
-- Specialisation de `Staff` pour l'administrateur.
-
-`src/main/java/com/library/model/Author.java`
-- Represente un auteur.
-
-`src/main/java/com/library/model/Category.java`
-- Represente une categorie de livres.
-
-`src/main/java/com/library/model/Book.java`
-- Represente un titre bibliographique.
-- Contient ISBN, titre, editeur, annee, categorie, auteurs, copies et etat actif.
-
-`src/main/java/com/library/model/BookCopy.java`
-- Represente un exemplaire physique d'un livre.
-- Contient le code-barres, le statut, la date d'acquisition et la reference au livre.
-
-`src/main/java/com/library/model/Loan.java`
-- Represente un emprunt.
-- Contient les dates et le lien vers member, copy et librarian.
-- Contient les methodes de retard et de retour.
-
-`src/main/java/com/library/model/Fine.java`
-- Represente une penalite liee a un emprunt.
-
-`src/main/java/com/library/model/Reservation.java`
-- Represente une reservation de livre par un adherent.
-
-================================================================
-11. Package dao
-================================================================
-
-`src/main/java/com/library/dao/GenericDAO.java`
-- Interface generique DAO.
-- Definit `findById`, `findAll`, `save`, `update`, `delete`.
-
-`src/main/java/com/library/dao/UserDAO.java`
-- Gere la table `users` et les jointures vers `members` et `staff`.
-- Cree, lit, met a jour, desactive et reactive les utilisateurs.
-- Mappe aussi les roles vers les objets Java correspondants.
-
-`src/main/java/com/library/dao/MemberDAO.java`
-- Specialise l'acces aux adherents.
-- Enrichit les membres avec le nombre d'emprunts actifs et l'etat des penalites.
-
-`src/main/java/com/library/dao/StaffDAO.java`
-- Specialise l'acces aux employes.
-
-`src/main/java/com/library/dao/CategoryDAO.java`
-- Gere les categories.
-
-`src/main/java/com/library/dao/AuthorDAO.java`
-- Gere les auteurs.
-
-`src/main/java/com/library/dao/BookDAO.java`
-- Gere les livres.
-- Gere aussi les associations `book_authors`.
-- Charge categories, auteurs et copies.
-- Gere la desactivation logique du livre.
-
-`src/main/java/com/library/dao/BookCopyDAO.java`
-- Gere les exemplaires.
-- Permet les recherches par ID, code-barres, disponibilite et changement de statut.
-
-`src/main/java/com/library/dao/LoanDAO.java`
-- Gere les emprunts.
-- Charge les relations necessaires pour l'historique et les rapports.
-- Fournit les comptes d'emprunts actifs.
-
-`src/main/java/com/library/dao/FineDAO.java`
-- Gere les penalites.
-- Permet de lister les impayees, marquer payee ou annuler.
-
-`src/main/java/com/library/dao/ReservationDAO.java`
-- Gere les reservations.
-- Permet la detection des doublons en attente, l'annulation, l'expiration et la satisfaction.
-
-================================================================
-12. Package service
-================================================================
-
-`src/main/java/com/library/service/FineCalculator.java`
-- Interface metier pour le calcul des penalites.
-
-`src/main/java/com/library/service/StandardFineCalculator.java`
-- Implementation standard a `2.00` par jour de retard.
-
-`src/main/java/com/library/service/AuthService.java`
-- Gere la connexion.
-- Verifie l'existence, l'activite du compte et le mot de passe hash.
-
-`src/main/java/com/library/service/UserService.java`
-- Gere les comptes admin et bibliothecaire.
-- Cree, modifie, change le mot de passe, desactive et reactive.
-
-`src/main/java/com/library/service/MemberService.java`
-- Gere les adherents.
-- Permet l'historique, les penalites et la verification d'eligibilite.
-
-`src/main/java/com/library/service/BookService.java`
-- Gere les livres, les categories et les auteurs.
-- Controle la desactivation logique si des emprunts actifs existent.
-
-`src/main/java/com/library/service/BookCopyService.java`
-- Gere les exemplaires.
-- Controle la suppression et la mise a jour des statuts.
-
-`src/main/java/com/library/service/LoanService.java`
-- Gere les emprunts et les retours.
-- Applique la limite d'emprunts.
-- Bloque les membres inactifs ou avec impayes.
-- Gere les transactions JDBC critiques.
-- Cree une penalite si necessaire.
-- Met a jour le statut de l'exemplaire.
-
-`src/main/java/com/library/service/FineService.java`
-- Gere la consultation, le paiement et l'annulation des penalites.
-
-`src/main/java/com/library/service/ReservationService.java`
-- Gere la creation, l'annulation, l'expiration et la consultation des reservations.
-
-`src/main/java/com/library/service/ReportService.java`
-- Produit les rapports sous forme de lignes texte :
-  - emprunts actifs ;
-  - retards ;
-  - penalites impayees ;
-  - livres les plus empruntes ;
-  - adherents les plus actifs ;
-  - disponibilite par livre.
-
-================================================================
-13. Package ui
-================================================================
-
-`src/main/java/com/library/ui/ConsoleMenu.java`
-- Interface console principale.
-- Contient les menus admin, bibliothecaire et adherent.
-- Ordonne les appels vers les services.
-- Inclut maintenant la reactivation des utilisateurs.
-
-`src/main/java/com/library/ui/LibrarySwingApp.java`
-- Bonus Swing minimal.
-- Propose une connexion graphique et un tableau de bord simple.
-
-================================================================
-14. Tests
-================================================================
-
-`src/test/java/com/library/model/LoanTest.java`
-- Teste le calcul du retard, le retour et le rejet d'un double retour.
-
-`src/test/java/com/library/model/MemberTest.java`
-- Teste l'eligibilite d'emprunt selon l'etat du membre.
-
-`src/test/java/com/library/service/StandardFineCalculatorTest.java`
-- Teste le calcul des penalites avec et sans retard.
-
-`src/test/java/com/library/service/ReservationServiceTest.java`
-- Teste la reservation en attente et le blocage des doublons.
-
-`src/test/java/com/library/service/LoanServiceRulesTest.java`
-- Teste le refus d'emprunt si l'exemplaire est indisponible ou si la limite est atteinte.
-
-`src/test/java/com/library/service/DatabaseConnectionIntegrationTest.java`
-- Test d'integration JDBC.
-- Il est valide seulement si la base et le driver sont disponibles.
-
-================================================================
-15. Dossier tools
-================================================================
-
-`tools/junit-platform-console-standalone-1.12.2.jar`
-- JAR telecharge pour executer les tests JUnit manuellement en ligne de commande.
-- Ajoute pour la validation locale.
-
-`tools/mysql-connector-j-9.3.0.jar`
-- Driver JDBC telecharge manuellement pour lancer l'application hors Maven/IntelliJ si besoin.
-
-================================================================
-16. Dossier out
-================================================================
-
-Le dossier `out` contient des artefacts de compilation locale utilises pendant la verification manuelle.
-
-`out/main/...`
-- Contient les `.class` compiles a partir de `src/main/java`.
-- Chaque fichier `.java` principal a son `.class` correspondant.
-
-Exemples :
-- `ApplicationContext.java` -> `out/main/com/library/app/ApplicationContext.class`
-- `Main.java` -> `out/main/com/library/app/Main.class`
-- `UserDAO.java` -> `out/main/com/library/dao/UserDAO.class`
-- `ConsoleMenu.java` -> `out/main/com/library/ui/ConsoleMenu.class`
-
-Fichiers supplementaires generes dans `out/main` :
-- `UserDAO$1.class`
-  - classe interne technique generee par le compilateur pour la logique du `switch`.
-- `ReportService$RowFormatter.class`
-  - interface fonctionnelle interne compilee.
-- `ConsoleMenu$1.class`
-  - classe auxiliaire generee par le compilateur.
-
-`out/test/...`
-- Contient les `.class` compiles a partir de `src/test/java`.
-
-Fichiers supplementaires generes dans `out/test` :
-- `LoanServiceRulesTest$AvailableCopyDAO.class`
-- `LoanServiceRulesTest$BlockedMemberDAO.class`
-- `LoanServiceRulesTest$EligibleMemberDAO.class`
-- `LoanServiceRulesTest$UnavailableCopyDAO.class`
-- `ReservationServiceTest$FakeBookDAO.class`
-- `ReservationServiceTest$FakeMemberDAO.class`
-- `ReservationServiceTest$FakeReservationDAO.class`
-- `ReservationServiceTest$FakeUnavailableBookCopyDAO.class`
-
-Ces classes correspondent aux faux objets utilises dans les tests.
-
-================================================================
-17. Dossier target
-================================================================
-
-Le dossier `target` est le dossier standard Maven de sortie de build.
-
-`target/classes/db.properties`
-- Copie de la ressource `db.properties`.
-
-`target/classes/schema.sql`
-- Copie de la ressource `schema.sql`.
-
-`target/classes/com/library/...`
-- Version Maven compilee des classes de `src/main/java`.
-- Meme logique que `out/main`, mais via le pipeline Maven/IDE.
-
-En pratique :
-- `out` a servi pour des validations manuelles rapides ;
-- `target` est la sortie plus standard du cycle Maven/IntelliJ.
-
-================================================================
-18. Comment chaque categorie de fichiers a ete creee
-================================================================
-
-1. Fichiers de structure
-- `pom.xml`, `README.md`, `db.properties`, `schema.sql`
-- Crees en premier pour rendre le projet executable.
-
-2. Fichiers metier
-- `model`, `enums`, `exception`, `util`
-- Crees ensuite pour etablir la base OOP.
-
-3. Fichiers DAO
-- Crees apres le modele pour brancher JDBC sur la base.
-
-4. Fichiers service
-- Crees pour porter les regles metier et separer l'interface de l'acces SQL.
-
-5. Fichiers UI
-- Crees quand la logique metier etait deja stable.
-
-6. Fichiers de test
-- Ajoutes apres les principales fonctionnalites.
-
-7. Fichiers de validation
-- `TEST_SCRIPT.md`, `tools`, `out`, `target`
-- Ajoutes ou produits pendant la verification locale.
-
-8. Correction finale
-- Ajout de la reactivation dans `UserDAO`, `UserService`, `ConsoleMenu` et `TEST_SCRIPT.md`
-- Suite au retour de test utilisateur sur l'absence de reactivation.
-
-================================================================
-19. Resume final
-================================================================
-
-Le projet a ete construit de maniere progressive et propre :
-- analyse ;
-- structure ;
-- modele OOP ;
-- base SQL ;
-- JDBC ;
-- services ;
-- interface ;
-- tests ;
-- corrections.
-
-Les fichiers les plus importants a retenir pour la soutenance sont :
-- `pom.xml`
-- `src/main/resources/schema.sql`
-- `src/main/resources/db.properties`
-- `src/main/java/com/library/app/Main.java`
-- `src/main/java/com/library/ui/ConsoleMenu.java`
-- `src/main/java/com/library/service/LoanService.java`
-- `src/main/java/com/library/dao/UserDAO.java`
-- `src/main/java/com/library/util/DatabaseConnection.java`
-- `TEST_SCRIPT.md`
-
-Les dossiers `out`, `target` et `tools` servent surtout a la compilation et a la verification locale.
-Le vrai coeur du projet est dans `src/main/java`, `src/main/resources` et `src/test/java`.
+Ces elements ne sont pas le centre de la presentation.

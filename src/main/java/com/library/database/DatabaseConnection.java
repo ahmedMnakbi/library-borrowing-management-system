@@ -1,12 +1,12 @@
-package com.library.util;
+package com.library.database;
 
 import com.library.exception.DatabaseException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,22 +29,16 @@ public final class DatabaseConnection {
         );
     }
 
-    public static Properties getProperties() {
-        Properties copy = new Properties();
-        copy.putAll(PROPERTIES);
-        return copy;
-    }
-
     private static Properties loadProperties() {
         try (InputStream inputStream = openPropertiesStream()) {
             if (inputStream == null) {
-                throw new DatabaseException("File " + PROPERTIES_FILE + " introuvable dans les ressources ou a la racine du projet.", null);
+                throw new DatabaseException("Fichier db.properties introuvable.", null);
             }
             Properties properties = new Properties();
             properties.load(new java.io.InputStreamReader(inputStream, StandardCharsets.UTF_8));
             Properties normalized = normalizeProperties(properties);
             if (normalized.getProperty("db.url") == null || normalized.getProperty("db.url").isBlank()) {
-                throw new DatabaseException("La propriete db.url est manquante dans db.properties.", null);
+                throw new DatabaseException("La propriete db.url est manquante.", null);
             }
             return normalized;
         } catch (IOException exception) {
@@ -68,12 +62,8 @@ public final class DatabaseConnection {
     private static void ensureDriverLoaded() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException mysqlException) {
-            try {
-                Class.forName("org.mariadb.jdbc.Driver");
-            } catch (ClassNotFoundException mariaDbException) {
-                throw new DatabaseException("Aucun driver JDBC MySQL/MariaDB n'est disponible dans le classpath.", mariaDbException);
-            }
+        } catch (ClassNotFoundException exception) {
+            throw new DatabaseException("Driver MySQL JDBC introuvable dans le classpath.", exception);
         }
     }
 
