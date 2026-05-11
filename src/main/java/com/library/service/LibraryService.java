@@ -136,6 +136,13 @@ public class LibraryService {
         repository.setUserActive(userId, false);
     }
 
+    public void deactivateUser(int userId, int currentUserId) throws SQLException {
+        if (userId == currentUserId) {
+            throw new ValidationException("Un administrateur ne peut pas desactiver son propre compte.");
+        }
+        deactivateUser(userId);
+    }
+
     public void reactivateUser(int userId) throws SQLException {
         repository.setUserActive(userId, true);
     }
@@ -258,6 +265,9 @@ public class LibraryService {
     public Reservation createReservation(int bookId, int memberId) throws SQLException {
         getBookById(bookId);
         getMemberById(memberId);
+        if (repository.hasAvailableCopy(bookId)) {
+            throw new BookUnavailableException("Ce livre a encore un exemplaire disponible. Il faut emprunter l'exemplaire au lieu de reserver.");
+        }
         if (repository.hasPendingReservation(memberId, bookId)) {
             throw new DuplicateReservationException("Une reservation en attente existe deja pour ce livre.");
         }

@@ -91,7 +91,7 @@ public class ConsoleMenu {
                     case 2 -> createStaffAccount(Role.ADMIN);
                     case 3 -> service.listUsers().forEach(this::printUser);
                     case 4 -> service.searchUsers(readLine("Mot-cle : ")).forEach(this::printUser);
-                    case 5 -> service.deactivateUser(readInt("ID utilisateur : "));
+                    case 5 -> service.deactivateUser(readInt("ID utilisateur : "), currentUser.getId());
                     case 6 -> service.reactivateUser(readInt("ID utilisateur : "));
                     case 7 -> back = true;
                     default -> System.out.println("Choix invalide.");

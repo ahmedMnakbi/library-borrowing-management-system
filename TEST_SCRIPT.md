@@ -164,6 +164,10 @@ Expected result:
 - first reservation is created
 - duplicate reservation is refused
 
+Extra rule:
+
+- if at least one copy is `AVAILABLE`, reservation is refused because the book can be borrowed directly.
+
 From librarian:
 
 1. List reservations.

@@ -83,6 +83,10 @@ Important design choice:
 
 `Book` and `BookCopy` are separated because a single title can have multiple physical copies.
 
+Reservation rule:
+
+`A member can reserve a book only when all physical copies are unavailable. If a copy is available, the correct workflow is borrowing, not reservation.`
+
 ## Demo Accounts
 
 - Admin: `admin1` / `admin123`

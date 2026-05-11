@@ -411,6 +411,18 @@ public class LibraryRepository {
         }
     }
 
+    public boolean hasAvailableCopy(int bookId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM book_copies WHERE book_id = ? AND status = 'AVAILABLE'";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, bookId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                return resultSet.getInt(1) > 0;
+            }
+        }
+    }
+
     public void updateCopyStatus(int copyId, CopyStatus status) throws SQLException {
         try (Connection connection = DatabaseConnection.getConnection()) {
             updateCopyStatus(connection, copyId, status);

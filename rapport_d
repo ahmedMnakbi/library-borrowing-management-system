@@ -122,6 +122,11 @@ Adherent :
 - consultation penalites
 - reservation
 
+Regle de reservation :
+
+- une reservation est acceptee seulement si aucun exemplaire du livre n'est disponible
+- si un exemplaire est disponible, le livre doit etre emprunte normalement
+
 ## Elements Bonus
 
 - Maven sert a gerer le connecteur MySQL

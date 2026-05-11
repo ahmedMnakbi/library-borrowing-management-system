@@ -121,9 +121,3 @@ CREATE TABLE IF NOT EXISTS reservations (
     FOREIGN KEY (member_id) REFERENCES members (member_id)
 );
 
-CREATE INDEX idx_books_title ON books (title);
-CREATE INDEX idx_books_isbn ON books (isbn);
-CREATE INDEX idx_copies_status ON book_copies (status);
-CREATE INDEX idx_loans_member_status ON loans (member_id, status);
-CREATE INDEX idx_fines_status ON fines (status);
-CREATE INDEX idx_reservations_book_status ON reservations (book_id, status);

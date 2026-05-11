@@ -113,6 +113,11 @@ Important files:
 
 `DatabaseConnection` opens the JDBC connection. `LibraryRepository` uses SQL and `PreparedStatement` to read/write data.
 
+Reservation rule:
+
+- the service checks the repository before creating a reservation
+- reservation is allowed only when no copy of the book is `AVAILABLE`
+
 ## Main Course Message
 
 V2 demonstrates Java OOP with a real database and a console interface. Advanced items such as password hashing, Maven, tests, reports, and future visual interfaces are bonus topics only.

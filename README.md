@@ -108,6 +108,22 @@ Passwords are stored hashed in the seed data. This is a small security bonus, no
 - Librarian manages books, authors, categories, copies, members, loans, returns, fines, and reservations.
 - Member searches books, views loans/fines/reservations, and reserves books.
 
+Reservation rule:
+
+- A member can reserve a book only when no physical copy is currently `AVAILABLE`.
+- If a copy is available, the normal action is borrowing that copy through the librarian.
+
+## Clean Submission ZIP
+
+When preparing a ZIP for submission, exclude generated or local-only files:
+
+- `.git/`
+- `target/`
+- `out/`
+- `.idea/`
+- `*.class`
+- `setup-report.txt`
+
 ## Bonus / Future Improvements
 
 - A visual interface can be added later if needed.
