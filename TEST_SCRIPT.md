@@ -28,6 +28,14 @@ Expected result:
 
 - build success
 
+Optional Windows helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup-and-open.ps1
+```
+
+This checks Java 17+, Maven, MySQL, required project files, compiles the project, and can optionally import the demo database, run the console app, and open the project in IntelliJ or VS Code.
+
 ## 3. Run
 
 Run `com.library.Main` from IntelliJ, or:

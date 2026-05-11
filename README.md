@@ -93,6 +93,33 @@ mvn exec:java -Dexec.mainClass="com.library.Main"
 Or run `com.library.Main` directly from IntelliJ.
 
 
+## Quick Setup Script
+
+On Windows, you can run the setup helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup-and-open.ps1
+```
+
+Or use the wrapper:
+
+```bat
+setup-and-open.bat
+```
+
+The script:
+
+- checks Java/JDK 17+
+- checks Maven
+- checks MySQL/MariaDB availability
+- checks required project and database files
+- runs `mvn clean compile`
+- optionally imports the demo database with `schema.sql` and `seed.sql`
+- optionally runs the console app
+- opens the project in IntelliJ IDEA, VS Code, or Windows Explorer
+
+The script asks before installing tools or importing/resetting the demo database.
+
 ## Demo Accounts
 
 | Role | Username | Password |
