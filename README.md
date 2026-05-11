@@ -66,26 +66,59 @@ Main tables:
 
 ## Diagrams
 
-PlantUML diagram sources are available in `docs/diagrams/`:
+These diagrams explain the main structure and workflows of the V2 project.
 
-- [Class Diagram](docs/diagrams/class-diagram.puml)
-- [Architecture Diagram](docs/diagrams/architecture-diagram.puml)
-- [Borrow Sequence](docs/diagrams/borrow-sequence.puml)
-- [Return Sequence](docs/diagrams/return-sequence.puml)
-- [Reservation Sequence](docs/diagrams/reservation-sequence.puml)
-- [Database Overview](docs/diagrams/database-overview.puml)
+### Class Diagram
 
-PlantUML is optional documentation tooling. To render SVG diagrams later:
+This diagram shows the main OOP classes, inheritance structure, and relationships between books, copies, loans, reservations, and fines.
 
-```bash
-plantuml -tsvg docs/diagrams/*.puml
-```
+![Class Diagram](docs/diagrams/rendered/class-diagram.svg)
 
-Or with a local PlantUML jar:
+[PlantUML source](docs/diagrams/class-diagram.puml)
 
-```bash
-java -jar tools/plantuml.jar -tsvg docs/diagrams/*.puml
-```
+### Simplified Architecture
+
+This diagram shows the simplified V2 architecture:
+
+Main -> ConsoleMenu -> LibraryService -> LibraryRepository -> MySQL/MariaDB
+
+![Architecture Diagram](docs/diagrams/rendered/architecture-diagram.svg)
+
+[PlantUML source](docs/diagrams/architecture-diagram.puml)
+
+### Borrow Book Sequence
+
+This diagram explains how a librarian borrows a book copy for a member.
+
+![Borrow Sequence](docs/diagrams/rendered/borrow-sequence.svg)
+
+[PlantUML source](docs/diagrams/borrow-sequence.puml)
+
+### Return Book Sequence
+
+This diagram explains how returning a book updates the loan, updates the copy status, and may create a fine.
+
+![Return Sequence](docs/diagrams/rendered/return-sequence.svg)
+
+[PlantUML source](docs/diagrams/return-sequence.puml)
+
+### Reservation Sequence
+
+This diagram explains how a member reserves a book only when no copy is available.
+
+![Reservation Sequence](docs/diagrams/rendered/reservation-sequence.svg)
+
+[PlantUML source](docs/diagrams/reservation-sequence.puml)
+
+### Database Overview
+
+This diagram shows the main database tables and relationships.
+
+![Database Overview](docs/diagrams/rendered/database-overview.svg)
+
+[PlantUML source](docs/diagrams/database-overview.puml)
+
+The rendered SVG files are included for GitHub viewing. The `.puml` files are kept as editable source diagrams.
 
 ## Setup
 
