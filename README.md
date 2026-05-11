@@ -62,6 +62,8 @@ Main tables:
 
 `Book` and `BookCopy` are separated because one book title can have many physical copies, and each copy can have its own status.
 
+`seed.sql` loads a richer demo database with several users, categories, authors, books, copies, loans, fines, and reservations. See `DEMO_DATABASE_SCENARIOS.md` for phpMyAdmin demo ideas.
+
 ## Setup
 
 1. Start MySQL/MariaDB.

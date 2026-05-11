@@ -14,9 +14,11 @@ SOURCE src/main/resources/seed.sql;
 Expected result:
 
 - database `library_db` exists
-- demo accounts exist
-- demo book `Clean Code` exists
-- copies `BC001` and `BC002` exist
+- all demo accounts exist
+- at least 10 books exist
+- multiple copies, loans, fines, and reservations exist
+
+For a database-focused presentation, see `DEMO_DATABASE_SCENARIOS.md`.
 
 ## 2. Compile
 
